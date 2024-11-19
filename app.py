@@ -12,8 +12,8 @@ st.title("Gym Session Recommender AI")
 st.write(
     """
     Gym Session Recommender AI is an intelligent assistant designed to recommend personalized workout sessions 
-    based on user preferences. Input your fitness goal, level, or target muscle group, and let the AI provide 
-    tailored suggestions to help you achieve your fitness journey!
+    based on user preferences. Just type your fitness goal, level, or target muscle group, and the AI will suggest 
+    tailored workouts to help you on your fitness journey!
     """
 )
 
@@ -59,52 +59,43 @@ Here’s the structure of the data:
 
 Use this information to generate personalized workout recommendations.
 
-**User preferences:**
-1. Fitness level: {fitness_level}
-2. Target muscle group: {target_muscle}
-3. Workout category: {workout_category}
+**User preferences and requests:**
+{user_input}
 
 Provide recommendations in a friendly and motivational tone.
 """
 
-# Input dari pengguna
-st.sidebar.header("Preferences")
-fitness_level = st.sidebar.selectbox("Select your fitness level:", ["beginner", "intermediate", "advanced"])
-target_muscle = st.sidebar.selectbox("Target muscle group:", ["abdominals", "legs", "arms", "chest", "back", "shoulders"])
-workout_category = st.sidebar.selectbox("Workout category:", ["strength", "cardio", "flexibility"])
+# Inisialisasi percakapan
+if "conversation" not in st.session_state:
+    st.session_state.conversation = []
 
 # LLM Chain
-try:
-    llm_prompt = PromptTemplate(
-        template=prompt_template,
-        input_variables=["fitness_level", "target_muscle", "workout_category"]
-    )
-    llm_chain = LLMChain(llm=llm, prompt=llm_prompt, verbose=True)
-except Exception as e:
-    st.error(f"Gagal membuat prompt chain: {e}")
-    st.stop()
+llm_prompt = PromptTemplate(
+    template=prompt_template,
+    input_variables=["user_input"]
+)
+llm_chain = LLMChain(llm=llm, prompt=llm_prompt, verbose=True)
 
-# Tampilkan data jika pengguna memilih
-if st.checkbox("Show raw data"):
-    st.json(data)
+# Input dari pengguna untuk percakapan
+input_question = st.text_input("What can I help you with? (e.g., 'recommend a workout for legs', 'I want to target chest')")
 
 # Tombol untuk meminta rekomendasi
-if st.button("Get Recommendation"):
-    try:
-        response = llm_chain.run({
-            "fitness_level": fitness_level,
-            "target_muscle": target_muscle,
-            "workout_category": workout_category,
-        })
+if st.button("Submit"):
+    if input_question:
+        try:
+            response = llm_chain.run({
+                "user_input": input_question,
+            })
 
-        # Tampilkan hasil rekomendasi
-        if response:
-            st.subheader("Recommended Workout:")
-            st.write(response)
-        else:
-            st.error("Failed to generate a recommendation. Please try again.")
-    except Exception as e:
-        st.error(f"Terjadi kesalahan saat menghasilkan rekomendasi: {e}")
+            # Simpan percakapan
+            st.session_state.conversation.append({"question": input_question, "response": response})
 
-        
-        
+            # Tampilkan percakapan
+            for entry in st.session_state.conversation:
+                st.write(f"**You:** {entry['question']}")
+                st.write(f"**Bot:** {entry['response']}")
+
+        except Exception as e:
+            st.error(f"Terjadi kesalahan saat menghasilkan rekomendasi: {e}")
+    else:
+        st.error("Please enter a question to get a recommendation.")
