@@ -1,6 +1,6 @@
 Below are several sample user questions related to the workout document provided, and the corresponding MongoDB aggregation pipeline queries that can be used to fetch the desired data. Use them wisely.
 
-Sample Document
+Sample Document:
 {
   "name": "3/4 Sit-Up",
   "force": "pull",
@@ -79,9 +79,7 @@ Query:
   }
 ]
 
-
 Question 4: Recommend the top 3 strength workouts for advanced users.
-
 Query:
 [
   {
@@ -122,6 +120,97 @@ Query:
       "name": 1,
       "primaryMuscles": 1,
       "secondaryMuscles": 1,
+      "instructions": 1
+    }
+  }
+]
+
+Question 6: Provide a 5-day workout plan for strength training.
+Query:
+[
+  {
+    "$match": {
+      "category": "strength"
+    }
+  },
+  {
+    "$project": {
+      "name": 1,
+      "category": 1,
+      "level": 1
+    }
+  },
+  {
+    "$limit": 5
+  }
+]
+
+Question 7: How do you perform a "Push-Up" exercise? (Provide instructions and images)
+Query:
+[
+  {
+    "$match": {
+      "name": "Push-Up"
+    }
+  },
+  {
+    "$project": {
+      "name": 1,
+      "instructions": 1,
+      "images": 1
+    }
+  }
+]
+
+Question 8: Recommend a weekly workout routine for a beginner focusing on full body strength.
+Query:
+[
+  {
+    "$match": {
+      "level": "beginner",
+      "category": "strength"
+    }
+  },
+  {
+    "$project": {
+      "name": 1,
+      "category": 1,
+      "level": 1,
+      "primaryMuscles": 1
+    }
+  }
+]
+
+Question 9: List exercises targeting the "back" muscle group.
+Query:
+[
+  {
+    "$match": {
+      "primaryMuscles": { "$in": ["back"] }
+    }
+  },
+  {
+    "$project": {
+      "name": 1,
+      "primaryMuscles": 1,
+      "instructions": 1
+    }
+  }
+]
+
+Question 10: Provide a cardio workout plan for weight loss.
+Query:
+[
+  {
+    "$match": {
+      "category": "cardio"
+    }
+  },
+  {
+    "$project": {
+      "name": 1,
+      "category": 1,
+      "level": 1,
       "instructions": 1
     }
   }

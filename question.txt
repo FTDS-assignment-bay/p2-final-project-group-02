@@ -3,3 +3,8 @@
 3. Show compound exercises for intermediate users.
 4. Recommend the top 3 strength workouts for advanced users.
 5. Find workouts that target multiple muscle groups (both primary and secondary).
+6. Provide a 5-day workout plan for strength training. (Output should only list the exercise names per day)
+7. How do you perform a "Push-Up" exercise? (Provide instructions and images)
+8. Recommend a weekly workout routine for a beginner focusing on full-body strength.
+9. List exercises targeting the "back" muscle group.
+10. Provide a cardio workout plan for weight loss.
