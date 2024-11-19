@@ -1,0 +1,5 @@
+1. Recommend beginner-level workouts targeting the abdominals.
+2. List all workouts that require only body weight.
+3. Show compound exercises for intermediate users.
+4. Recommend the top 3 strength workouts for advanced users.
+5. Find workouts that target multiple muscle groups (both primary and secondary).
