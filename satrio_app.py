@@ -77,9 +77,11 @@ if st.button("Submit"):
 
                     # Ambil nama latihan yang direkomendasikan oleh AI
                     recommended_exercise = response.strip()
+                    recommended_exercise = recommended_exercise.replace(" ", "_")
 
                     # Validasi apakah nama latihan ada dalam daftar
-                    if recommended_exercise in exercises:
+                    if recommended_exercise in exercise_list_str:
+                    #if recommended_exercise in exercises:
                         # Kirim permintaan detail ke API untuk latihan yang direkomendasikan
                         exercise_detail_url = f"http://127.0.0.1:5000/exercises/{recommended_exercise}"
                         detail_response = requests.get(exercise_detail_url)
