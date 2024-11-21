@@ -51,6 +51,7 @@ def run():
     Sample question: {sample}
     Please provide clear, informative recommendations based on the user’s question: {question}
 
+
     When recommending workout sessions, provide only the names of the exercises, **no detailed information or instructions**. If the question asks for a list of workouts (such as a workout plan), return only the names of the exercises, with no further details.
 
     For a weekly or monthly workout plan:
@@ -64,9 +65,7 @@ def run():
     - Provide detailed step-by-step workout instructions for the requested exercise.
     - Make sure the instructions are clear and easy to follow, ensuring the user understands how to perform the exercise correctly and safely.
     
-    If the user asks a question OUTSIDE the scope of exercises and workout plan or if the user asks something that seems like a math question (e.g., "3+3"), respond with: "Sorry, I can only assist with questions related to gym workouts and exercises."
-    Or if the user asks about an exercise not listed in {exercises}, respond with: "Unfortunately, we don't provide information for this exercise."
-
+    If the user asks a question outside the scope of exercises, respond with: "Sorry, I can only assist with questions related to gym workouts and exercises."
     Respond in a friendly and motivational tone.
     """
 
@@ -145,13 +144,14 @@ def run():
     # Display chat messages from history on app rerun
     for message in st.session_state.historical:
         with st.chat_message(message["role"]):
-            st.markdown(message["message"]) 
+            st.markdown(message["message"])
 
     # Tombol submit untuk memulai percakapan
     if prompt := st.chat_input("Enter your fitness-related question here"):
         try:
             # Generate response based on the question and historical context
-            conversation_context = "\n".join([f"{entry['message']}" for entry in st.session_state.historical])
+            # Add previous inputs and responses to the prompt context for more personalized responses
+            conversation_context = "\n".join([f"User: {entry['message']}\nAI: {entry['message']}" for entry in st.session_state.historical])
             full_question = f"{conversation_context}\nUser: {prompt}\nAI:"
             
             # Generate the AI response, passing the fetched exercises data
@@ -164,11 +164,9 @@ def run():
             # Save user input and AI response in historical list
             st.session_state.historical.append({"role": "user", "message": prompt})
             
-            # Display the user message once
             with st.chat_message("user"):
                 st.markdown(prompt)
-            
-            # Display the assistant response once
+            # Display assistant response in chat message container
             with st.chat_message("assistant"):
                 st.markdown(response)
                 
@@ -177,14 +175,12 @@ def run():
                 if exercise_name and should_display_images(prompt):
                     # Ubah nama exercise yang diekstrak menjadi PascalCase
                     exercise_name_pascal = to_pascal_case(exercise_name)
-                    display_images(exercise_name_pascal)    
-
+                    display_images(exercise_name_pascal)
+                
             # Add assistant response to chat history
-            st.session_state.historical.append({"role": "assistant", "message": response})  
-
+            st.session_state.historical.append({"role": "assistant", "message": response})
         except Exception as e:
             st.error(f"Error occurred: {e}")
-
 
 # Run the app
 if __name__ == "__main__":
