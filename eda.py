@@ -19,9 +19,10 @@ def run():
 
     # Dataframe section
     # Load dataset
-    df = pd.read_json('data.json')
+    df = pd.read_json('exercises.json')
 
-    # Define a function to categorize force
+    # Dataset cleaning
+    # Creating a function to handle missing value on column 'force'
     def categorize_force(exercise_name):
         if exercise_name in [
             "Balance Board", "Conan's Wheel", "Farmer's Walk", "Rickshaw Carry", "Lying Prone Quadriceps", "Yoke Walk"
@@ -42,10 +43,10 @@ def run():
         else:
             return "unknown"  # Fallback for unrecognized exercises
 
-    # Fill missing values in the 'force' column
+    # Fill missing values in the 'force' column using said function
     df['force'] = df.apply(lambda row: categorize_force(row['name']) if pd.isnull(row['force']) else row['force'], axis=1)
 
-    # Define a function to categorize equipment
+    # Creating a function to handle missing value on column 'equipment'
     def categorize_equipment(exercise_name):
         body_only = [
             "Ankle Circles", "Ankle On The Knee", "Arm Circles", "Bodyweight Walking Lunge",
@@ -66,24 +67,27 @@ def run():
         ]
         return "body only" if exercise_name in body_only else "other"
 
-    # Check for missing values in the 'equipment' column and apply the function only to those rows
+    # Fill missing values in the 'equipment' column using said function
     df['equipment'] = df['equipment'].apply(lambda x: categorize_equipment(x) if pd.isna(x) else x)
 
-    # Fill missing values in the 'mechanic' column
+    # Fill missing values in the 'mechanic' column with unkown
     df['mechanic'] = df['mechanic'].fillna('unknown')
 
     # Fill empty lists in the 'secondaryMuscles' column with 'none'
     df['secondaryMuscles'] = df['secondaryMuscles'].apply(lambda x: ['none'] if isinstance(x, list) and len(x) == 0 else x)
 
-    # Flatten the primaryMuscles column to strings if there's only one muscle in each list
+    # Changing the type of the column 'primaryMuscles' to a non-list format
     df['primaryMuscles'] = df['primaryMuscles'].apply(lambda x: x[0] if isinstance(x, list) and len(x) == 1 else x)
 
-    # If 'instructions' contains lists, join them into strings
+    # Changing the type of the column 'instructions' to a non-list format
     df['instructions'] = df['instructions'].apply(lambda x: ' '.join(x) if isinstance(x, list) else x)
 
 
     # Description
-    st.write('This page will explore the dataset thoroughly.')
+    st.write('This page is aimed to explore the dataset that the chatbot is trained on thoroughly.\n\n')
+    
+    # Data visualization
+    st.write('# Data Overview')
 
     # Show the dataframe
     st.dataframe(df.head())
@@ -94,16 +98,28 @@ def run():
     # Visualization
     st.write('### Pie Chart of Different Column Categories')
 
+    # Description
+    st.write('Here, we are exploring the distribution of different categories of column that have a clear category, including `force`, `level`, `mechanic`, `category`.')
+
     # Option
     option = st.selectbox('Select One Column', ('force', 'level', 'mechanic', 'category'))
 
-    counts = df[option].value_counts()
+    # Prepare the data
+    if option == 'category':  # Only modify for the 'category' column
+        modified_df = df.copy()
+        modified_df['category_for_pie'] = modified_df['category'].replace(
+            ['strongman', 'olympic weightlifting', 'powerlifting'], 
+            'competition exercises'
+        )
+        counts = modified_df['category_for_pie'].value_counts()
+    else:
+        counts = df[option].value_counts()
 
-    # Visiualization
+    # Visualization
     fig = plt.figure(figsize=(7, 7))
     plt.pie(counts, labels=counts.index, autopct='%1.2f%%', startangle=90)
-    plt.title('Distribution of Force Categories')
-    plt.axis('equal')  
+    plt.title('Pie Chart of Different Column Categories')
+    plt.axis('equal')
 
     # Show the plot
     st.pyplot(fig)
@@ -111,7 +127,7 @@ def run():
     # Observation
     if option == 'force':
         st.write('**Overview**:\n'
-        '- This column represents the type of force exerted during the exercise, where this dataset divides into three categories of force: **Push, Pull and Static**.\n\n'
+        '- The column `force` represents the type of force exerted during the exercise, where this dataset divides into three categories of force: **Push, Pull and Static**.\n\n'
         '**Background**:\n'
         '- According to [an article done by Aston University Birmingham UK](https://www.aston.ac.uk/sport/news/tips/fitness-exercise/push-pull-legs), **push and pull workouts are the two essential forces used to train all parts of a human body**, where workouts that utilize push forces trains the front side of the body while pull forces trains the back side. These two forces are essential in bodybuilding, and has been a popularized routine since 1987 documented in [a workout book mmade by the legendary bodybuilder Arnold Schwarzenegger](https://search.worldcat.org/title/15244528).\n'
         '- On the other hand, **static exercises refer to the warm-up routines** that people do before workouts in order to improve joint stability, muscle endurance, and posture improvement, as claimed by [an article made by the American Council on Exercise (ACE)](https://www.acefitness.org/resources/everyone/blog/7258/improve-your-posture-with-these-isometric-exercises/).\n'
@@ -125,7 +141,7 @@ def run():
         )
     elif option == 'level':
         st.write('**Overview**:\n'
-        '- This column represents the difficulty level of each exercise, where this dataset into three levels of difficulty: **Beginner, Intermediate and Expert**.\n'
+        '- The column `level` represents the difficulty level of each exercise, where this dataset into three levels of difficulty: **Beginner, Intermediate and Expert**.\n'
         '\n**Background**:\n'
         '- It is no secret that **progressive overload is the key to achieving better fitness results**. [A research done by the Front Physiol in 2019](https://journals.lww.com/acsm-msse/fulltext/2009/03000/progression_models_in_resistance_training_for.26.aspx) suggests that this progression allows for constant stimulation in the muscle as the muscles are already used to the easier repertoire. One way to increase progression is by increase the technical difficulty of exercises, as the research suggests.\n'
         '\n**Observation**:\n'
@@ -138,7 +154,7 @@ def run():
         )
     elif option == 'mechanic':
         st.write('**Overview**:\n'
-        '- This column represents how the exercises engage with their respective muscle groups, divided into two: compound exercises (exercises that target multiple muscle groups) and isolation exercises(exercises that target a specific muscle group).\n'
+        '- The column `mechanic` represents how the exercises engage with their respective muscle groups, divided into two: compound exercises (exercises that target multiple muscle groups) and isolation exercises(exercises that target a specific muscle group).\n'
         '\n**Observation**:\n'
         '- The majority of the exercises in this dataset belong in compound exercises with over half the dataset (56.01%).\n'
         '- Isolation belongs in the lower half, with (34.02%) of the dataset.\n'
@@ -148,16 +164,16 @@ def run():
         )
     elif option == 'category':
         st.write('**Overview**:\n'
-        '- This column represents the exercise category based on the type of exercise, which consists of six different categories of exercise: strength, stretching, plyometrics, powerlifting, olympic weightlifting, strongman, and cardio.\n'
+        '- The column `category` represents the exercise category based on the type of exercise, which consists of six different categories of exercise: strength, stretching, plyometrics, competition exercises (which is a combination of powerlifting, olympic weightlifting, strongman), and cardio.\n'
         '\n**Observation**\n'
         '- In this dataset, strength category exercises remain the distinct majority with as much as (66.55%) of the dataset being strength exercises.\n'
         '- The second majority, although not as distinct of a majority as strength exercises, are stretching, which contains (14.09%) of the dataset.\n'
         '- The smallest portion of exercises here is cardiovascular exercises, accounting for only (1.6%) of the dataset.\n'
-        '- The rest of the exercises here are specialized kind of exercises that are tailored more for a specific kind of purpose, such as plyometrics, powerlifting, olympic weightlifting, and strongman.\n'
+        '- The rest of the exercises here are specialized kind of exercises that are tailored more for professional sports, such as powerlifting, olympic weightlifting, and strongman, accounting for a total of 10.77% of the dataset. \n'
         '\n**Insights**:\n'
         '- This suggests that the dataset heavily emphasizes strength-based exercises, making it ideal for the general population looking to build muscle, improve strength, or engage in functional fitness.\n'
         '- Stretching being the substantial proportion of the dataset underlines its significance in warm-up/cool-down routines to ensure that its users do the necessary procedure before starting a workout.\n'
-        '- The other, more specific categories, means that this dataset also accounts for the more difficult kind of exercises that are tailored for users looking to learn competition exercises.'
+        '- The other, more specific categories, means that this dataset also accounts for the more difficult kind of exercises that are tailored for exeperienced gym-goers looking to learn more about competition exercises.'
         )
     else:
         st.write('No insights because no column is chosen!')
@@ -191,7 +207,7 @@ def run():
     # Insights
     st.write('**Background**:\n'
     '- Certain exercise categories are bound to be filled with harder exercises than others, especially for the ones that are specialized for the purpose of competition, so displaying information will give us a better understanding on the difficulty distribution of exercises.\n'
-    '- In this case, stacked bar chart is used to display the amount of exercises in certain difficulty levels for each category.'
+    '- In this case, stacked bar chart is used to display the amount of exercises in certain difficulty levels for each category.\n'
     '\n**Observation**:\n'
     '- From this stacked bar chart, we can see the two categories that represent our dataset, strength and stretching, having roughly the same amount of beginner-intermediate-expert ratio with about 60:30:10 roughly for each of them.\n'
     '- We can also see on the other hand, [specialized category of exercises that are aimed to train experts for competition](https://www.paralympic.org/powerlifting/about) such as olympic weightlifting, powerfilting, and strongman, the amount of exercises that are intermediate and expert far exceeds the beginner level exercises.\n'
@@ -203,10 +219,16 @@ def run():
     )
 
     # Visualization
-    st.write('### Word Cloud of Instructions')
+    st.write('### Word Cloud of Instructions on Strength Exercises')
+
+    # Description
+    st.write('In this word cloud, we are only looking at the strength exercises as it is the most prominant kind of exercises shown in the dataset.')
+
+    # Step 1: Filter the DataFrame for the 'Strength' category
+    strength_instructions = df[df['category'] == 'strength']['instructions']
 
     # Combine all instructions into one large string for the word cloud
-    all_instructions = ' '.join(df['instructions'])
+    all_instructions = ' '.join(strength_instructions)
 
     # Step 2: Generate the word cloud
     wordcloud = WordCloud(width=800, height=400, background_color='white').generate(all_instructions)
@@ -215,19 +237,19 @@ def run():
     fig2 = plt.figure(figsize=(10, 6))
     plt.imshow(wordcloud, interpolation='bilinear')
     plt.axis('off')  # Remove axes
-    plt.title('Word Cloud of Instructions', fontsize=16)
+    plt.title('Word Cloud of Strength Instructions', fontsize=16)
 
-    # Show the plot
+    # If using Streamlit, display the plot
     st.pyplot(fig2)
 
     # Insights
     st.write('**Observation**:\n'
     '- Words such as "starting", "position", "back", "knee", "floor", "leg", and "hip" are prominently featured in the word cloud. These terms likely reflect key instructions related to exercise setup and execution.\n'
-    '- Other frequent terms include "barbell", "dumbbell", and "movement", indicating common equipment and actions that are commonly used in the exercises.\n'
+    '- Other frequent terms include "dumbbell", and "movement", indicating common equipment and actions that are commonly used in the exercises.\n'
     '\n**Insights**:\n'
     '- The dominance of terms like "starting",  "position" and body part references shows that the instructions presented in the dataset emphasize proper setup and initial alignment for exercises. This clarifies the validity of the dataset in making accurate instructions, especially for beginners who require detailed guidance on form and technique.\n'
-    '- The frequent mention of equipment like "bar" and "dumbbell" suggests that the dataset includes a significant number of weight-training exercises. As evident from [a research done by Jackson J. Fye in 2022](https://link.springer.com/article/10.1007/s40279-021-01605-8), these exercises allow users to perform daily tasks much easier, which will benefit the target users of the ChatBot.\n'
-    '- The frequency in words that define human body parts highlights that the exercises cover all kinds of muscle groups, ensuring that the chatbot will offer the users a moe well-rounded workout approach.'
+    '- The frequent mention of equipment like "bar" and "dumbbell" suggests that the strength exercises in the dataset includes a significant number of weight-training exercises. As evident from [a research done by Jackson J. Fye in 2022](https://link.springer.com/article/10.1007/s40279-021-01605-8), these exercises allow users to perform daily tasks much easier, which will benefit the target users of the ChatBot.\n'
+    '- The frequency in words that define human body parts highlights that the exercises cover all kinds of muscle groups, ensuring that the chatbot will offer the users a more well-rounded workout approach for people looking to find the most ideal exercises to fit their goal.'
     )
 
     # Visualization
