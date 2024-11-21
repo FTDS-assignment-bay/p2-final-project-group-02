@@ -19,7 +19,7 @@ def run():
 
     # Dataframe section
     # Load dataset
-    df = pd.read_json('exercises.json')
+    df = pd.read_json('exercise.json')
 
     # Dataset cleaning
     # Creating a function to handle missing value on column 'force'
