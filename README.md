@@ -53,14 +53,15 @@ To create an intelligent chatbot that:
 3. **Personalized Recommendations:** Uses data to tailor workout plans to individual needs.  
 4. **Fitness Knowledge Base:** Provides answers to common questions about exercise and its benefits.
 
-   ## 🚀 **How to Use**  
+   ## 🚀 **How to Use**
+Step-by-steps:
 1. **Ask a Question:** Type your workut-related question in the text area.
 2. **Submit:** Click the "Submit" button to receive recommendations.
 3. **View Responses:** The chatbot will provide detailed answers, and the conversation will be saved for your reference.
 
    ## 🚀 **Example Questions**  
-1. **“Provide training sessions for a month!”**
-2. **“Provide cardio training sessions for a month!”**
-3. **“I don't have any equipment, give me a 2 week training session that suits me!”**
-4. **“How to do barbell squats?”**
+a. **“Provide training sessions for a month!”**
+b. **“Provide cardio training sessions for a month!”**
+c. **“I don't have any equipment, give me a 2 week training session that suits me!”**
+d. **“How to do barbell squats?”**
 
