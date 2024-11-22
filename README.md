@@ -59,9 +59,10 @@ Step-by-steps:
 2. **Submit:** Click the "Submit" button to receive recommendations.
 3. **View Responses:** The chatbot will provide detailed answers, and the conversation will be saved for your reference.
 
-   ## 🚀 **Example Questions**  
-a. **“Provide training sessions for a month!”**
-b. **“Provide cardio training sessions for a month!”**
-c. **“I don't have any equipment, give me a 2 week training session that suits me!”**
-d. **“How to do barbell squats?”**
+   ## 🚀 **Example Questions**
+Examples but not limited to
+1. **“Provide training sessions for a month!”**
+2. **“Provide cardio training sessions for a month!”**
+3. **“I don't have any equipment, give me a 2 week training session that suits me!”**
+4. **“How to do barbell squats?”**
 
